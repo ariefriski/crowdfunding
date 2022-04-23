@@ -12,7 +12,7 @@ import (
 
 // var a int = 0
 // var point *int = &a
-// fmt.Print(point)
+// fmt.Print(*point)
 
 func main() {
 	dsn := "root:123123@tcp(127.0.0.1:3306)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
@@ -22,9 +22,13 @@ func main() {
 		log.Fatal(err.Error())
 
 	}
-
+	//Repo
 	userRepository := user.NewRepository(db)
+
+	//Service
 	userService := user.NewService(userRepository)
+
+	//Handler
 	userHandler := handler.NewUserHandler(userService)
 
 	router := gin.Default()
@@ -32,7 +36,7 @@ func main() {
 	api := router.Group("/api/v1/")
 
 	api.POST("/users", userHandler.RegisterUser)
-
+	api.POST("/sessions", userHandler.LoginUser)
 	router.Run()
 
 	// userInput := user.RegisterUserInput{}

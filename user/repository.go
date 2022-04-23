@@ -1,25 +1,36 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 // Buat interface nge Savenya
 type Repository interface {
 	Save(user User) (User, error)
+	FindByEmail(email string) (User, error)
 }
 
-// Implementasi dari Interface Repository, tipe data konek DB
 type repository struct {
 	db *gorm.DB
 }
 
-// Instance dari struct repository
+// Fungsi dari struct reposiroty
 func NewRepository(db *gorm.DB) *repository {
 	return &repository{db}
 }
 
-// Simpan ke databasenya pake methode interface Repository (Save)
+// Menerapkan method dari interface nya Repository ke struct repository
 func (r *repository) Save(user User) (User, error) {
 	err := r.db.Create(&user).Error
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func (r *repository) FindByEmail(email string) (User, error) {
+	var user User
+	err := r.db.Where("email = ?", email).Find(&user).Error
 	if err != nil {
 		return user, err
 	}
